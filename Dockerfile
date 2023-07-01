@@ -1,6 +1,7 @@
 FROM node:16-alpine as build
 
 ENV HOME=/home/app
+ARG BACKEND_URL
 WORKDIR $HOME
 
 COPY package.json ./
@@ -12,7 +13,9 @@ RUN npm run build
 # production environment
 FROM nginx:1.16.0-alpine
 
-COPY --from=build /home/app/ /usr/share/nginx/html/
+ENV PORT=8080
+
+COPY --from=build /home/app/build/ /usr/share/nginx/html/
 RUN rm /etc/nginx/conf.d/default.conf
 COPY nginx.conf /etc/nginx/conf.d
 
